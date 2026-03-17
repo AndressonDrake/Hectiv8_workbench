@@ -1,0 +1,139 @@
+            body {
+                position: static;
+                background-color: white;
+                color: black;
+                margin: 0;
+                padding: 0;
+                width: 100%;
+            }
+
+            button {
+                border-radius: 10%;
+            }
+
+            /* Container Styles */
+
+            .container {
+                width: 100%;
+                margin: auto;
+                background-color: whitesmoke;
+            }
+
+            /* Navbar Styles */
+
+            .navbar {
+                background-color: white;
+                width: 100%;
+            }
+
+            .navbar table {
+                width: 95%;
+            }
+
+            .navbar table tr {
+                display: flex;
+                justify-content: flex-end;
+            }
+
+            .navbar td {
+                padding: 0 1.12%;
+            }
+
+            .navbar p {
+                display: inline-block;
+                margin: 20px 0;
+                font-size: 14px;
+            }
+
+            /* Header Styles */
+
+            .header {
+                background-color: white;
+                width: 90%;
+                margin-top: 20px;
+                justify-self: center;
+            }
+
+            #head_table_1 td {
+                padding-right: 300px;
+            }
+
+            #head_table_2 td {
+                padding: 5px;
+            }
+
+            .header img {
+                width: 150px;
+                border-radius: 50%;
+                display: block;
+                margin: 0px;
+                padding: 30px;
+                
+            }
+
+            .header button {
+                font-weight: lighter;
+                margin: 3px;
+                margin-top: 20px;
+                padding: 8px;
+                padding-left: 20px;
+                padding-right: 20px;
+                border: solid 1px black;
+            }
+
+            /* Content Styles */
+
+            .content {
+                background-color: white;
+                width: 100%;
+            }
+
+            /* Main Section Styles */
+
+            .main {
+                background-color: white;
+                width: 90%;
+                justify-self: center;
+                margin-top: 20px;
+                border: 1px solid #ddd;
+            }
+
+            .main textarea {
+                width: 99.615%;
+                border: 1px solid rgba(0, 0, 0, 0.432);
+                height: 20px;
+            }
+
+            .main p {
+                font-weight: bold;
+            }
+
+            .main button {
+                width : 100%;
+                background-color: green;
+                color: white;
+                font-weight: lighter;
+                padding: 10px;
+            }
+
+            /* Link Styles */
+
+            a {
+                text-decoration: none;
+                color: black;
+            }
+
+            a:link {
+                text-decoration: none;
+                color: black;
+            }
+
+            a:visited {
+                text-decoration: none;
+                color: black;
+            }
+
+            a:hover {
+                text-decoration: none;
+                color: black;
+            }

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Belajar CSS</title>
+    <!-- eksternal css define -->
+    <!-- <link rel="stylesheet" type="text/css" href="style.css"> -->
+    <!-- internal css define -->
+    <style>
+        body {
+            background: #b2dfdb;
+        }
+
+        h2 {
+            color: red;
+        }
+
+        h1 {
+            color: blue;
+        }
+
+        #box-1 {
+            width: 300px;
+            height: 150px;
+            background: red;
+            margin-left: 100px;
+            padding-left: 30px;
+
+            font-size: 16px;
+            font-family: 'Courier New', Courier, monospace;
+            color: white;
+            font-weight: 100;
+            font-style: italic;
+        }
+
+        #box-2 {
+            width: 300px;
+            height: 150px;
+            background: blue;
+            margin: 100px
+        }
+
+        a {
+            color: black;
+            font-size: 20px;
+            text-decoration: none;
+            border: 1px solid black;
+            margin: 5px;
+            padding: 5px;
+            display: inline-block;
+        }
+
+        .link:link{
+            color: orange;
+        }
+
+        .visit:visited{
+            color: purple;
+        }
+
+        .hover:hover{
+            color: green;
+        }
+
+        .active:active{
+            color: red;
+        }
+
+        .kiri{
+            text-align: left;
+        }
+
+        .kanan{
+            text-align: right;
+        }
+
+        .tengah{
+            text-align: center;
+        }
+
+        .justify{
+            text-align: justify;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ini untuk belajar link -->
+    <a class="link" href="https://www.hacktiv8.com">Hacktiv8 link</a>
+    <br>
+    <a class="visit" href="https://www.hacktiv8.com">Hacktiv8 visit</a>
+    <br>
+    <a class="hover" href="https://www.hacktiv8.com">Hacktiv8 hover</a>
+    <br>
+    <a class="active" href="https://www.hacktiv8.com">Hacktiv8 active</a>
+
+    <!-- belajar membuat format text -->
+    <p class="kiri">
+        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+    </p>
+    <p class="kanan">
+        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+    </p>
+    <p class="tengah">
+        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+    </p>
+    <p class="justify">
+        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+    </p>
+
+    <!-- ini menggunakan css inline -->
+    <!-- <h1 style="color:green">Ini CSS dengan menggunakan H1</h1> -->
+    <!-- tutup css inline -->
+
+    <h2>Ini CSS dengan menggunakan H2 Internal</h2>
+
+    <!-- <h2 style="color: brown;">Belajar Go dengan Hacktiv8</h2> -->
+
+    <h2>Belajar serius di kelas golang</h2>
+
+    <h3>Ini CSS dengan menggunakan Eksternal CSS</h3>
+
+    <!-- ini untuk belajar margin -->
+    <div id="box-1">
+        ini adalah box 1
+    </div>
+
+    <div id="box-2">
+        ini adalah box 2
+    </div>
+
+</body>
+
+</html>

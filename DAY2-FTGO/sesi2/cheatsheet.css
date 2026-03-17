@@ -1,0 +1,152 @@
+/* body{
+    background: blue;
+    color: #ffffff;
+} */
+
+/* 
+h1{
+    text-align: center;
+}
+
+.box{
+    background: blueviolet;
+    height: 200px;
+    width: 300px;
+    padding: 20px;
+}
+
+.box-dua{
+    background: red;
+    height: 100px;
+    width: 600px;
+    padding-left: 70px;
+} */
+
+.tulisan_satu{
+    color: green;
+    font-family: Arial, Helvetica, sans-serif;
+    font-style: normal;
+    text-decoration: underline;
+}
+
+.tulisan_dua{
+    color: orangered;
+    font-size: 24px;
+    font-style: italic;
+    text-align: right;
+    text-transform: capitalize;
+    text-decoration: overline;
+}
+
+.tulisan_tiga{
+    color: aqua;
+    font-weight: bold;
+    font-style: oblique;
+    text-align: center;
+    text-transform: lowercase;
+    text-decoration: line-through;
+    word-spacing: 10px;
+}
+
+.tulisan_empat{
+    text-transform: uppercase;
+    text-indent: 30px;
+    line-height: 30px;
+    letter-spacing: 5px;
+}
+
+
+
+
+
+
+.link{
+    font-size: 20pt;
+}
+
+.link:hover{
+    color: red;
+}
+
+.link:link{
+    color: blue;
+}
+
+.link:active{
+    color: green;
+}
+
+.link:visited{
+    background: yellow;
+}
+
+.tulisan_kiri{
+    text-align: left;
+}
+
+.tulisan_kanan{
+    text-align: right;
+}
+
+.tulisan_tengah{
+    text-align: center;
+}
+
+.tulisan_justify{
+    text-align: justify;
+}
+
+.kotak{
+    background: blue;
+    position: fixed;
+    left: 40px;
+    padding: 10px;
+}
+
+#garis_1{
+    border-style: solid;
+}
+
+#garis_2{
+    border-style: dotted;
+}
+
+#garis_3{
+    border-style: dashed;
+}
+
+#garis_4{
+    border-style: double;
+}
+
+#garis_5{
+    border-style: groove;
+}
+
+#garis_6{
+    border-style: inset;
+}
+
+#garis_7{
+    border-style: outset;
+}
+
+#garis_8{
+    border-style: ridge;
+}
+
+h1{
+    text-align: center;
+}
+
+ul.transportasi{
+    list-style-type: square;
+}
+
+ul.lokasi{
+    list-style-type: circle;
+}
+
+ol.merk{
+    list-style-type: upper-roman;
+}
