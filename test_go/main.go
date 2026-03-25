@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"strings"
+	"testing_go/helpers"
 )
 
 // declaring struct
@@ -22,6 +23,22 @@ type Person struct {
 type Employee2 struct {
 	division string
 	Person   Person
+}
+
+// declaring Interface
+type shape interface {
+	area() float64
+	perimeter() float64
+}
+
+// declaring struct for rectangle properties
+type rectangle struct {
+	width, height float64
+}
+
+// declaring struct for circle properties
+type circle struct {
+	radius float64
 }
 
 func main() {
@@ -661,6 +678,20 @@ outerLoop:
 	var person4 = &Person{name: "Mailo", age: 15}
 	person4.Greet()
 
+	fmt.Println()
+
+	// calling exported functions from herlpers directory
+	helpers.Greet_helpers() // imports/exports functions only work with first letter capital
+
+	fmt.Println()
+
+	// calling interface shape
+	var c1 shape = circle{radius: 5}
+	var r1 shape = rectangle{width: 3, height: 2}
+
+	fmt.Printf("Type of c1: %T\n", c1)
+	fmt.Printf("Type of r1: %T\n", r1)
+
 	//Maps: key-value stores implemented hash tables
 	//Map is Go's built-in associative data type to stores key-value pairs with fast average-time lookups
 	//Maps let you use more meaningful keys such as names, IDs, or other comparable values
@@ -749,4 +780,21 @@ func (p *Person) ChangeName2() {
 // declaring Pointer method
 func (p *Person) Greet() {
 	fmt.Println("Haii everyone", p)
+}
+
+// declaring function for interface shapes
+func (c circle) area() float64 {
+	return math.Pi * math.Pow(c.radius, 2)
+}
+
+func (r rectangle) area() float64 {
+	return r.height * r.width
+}
+
+func (c circle) perimeter() float64 {
+	return 2 * math.Pi * c.radius
+}
+
+func (r rectangle) perimeter() float64 {
+	return 2 * (r.height + r.width)
 }
