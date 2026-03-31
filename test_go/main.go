@@ -2,9 +2,15 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"math"
+	"net/http"
+	"os"
+	"runtime"
 	"strings"
+	"sync"
 	"testing_go/helpers"
+	"time"
 )
 
 // declaring struct
@@ -39,6 +45,11 @@ type rectangle struct {
 // declaring struct for circle properties
 type circle struct {
 	radius float64
+}
+
+type Notification struct {
+	UserID  int
+	Message string
 }
 
 func main() {
@@ -141,21 +152,21 @@ func main() {
 	fmt.Printf("wrong and right \t(%t) \n", condition5)
 
 	var condition6 = wrong || right
-	fmt.Printf("wrong and right \t(%t) \n", condition6)
+	fmt.Printf("wrong or right \t(%t) \n", condition6)
 
 	var condition7 = !wrong
-	fmt.Printf("wrong and right \t(%t) \n", condition7)
+	fmt.Printf("not wrong \t(%t) \n", condition7)
 
 	//Array: fixed-sized sequences of elements
 	//An array is a numbered sequence of elements of the same type with a fixed length
 	var numbers [4]int
 	numbers = [4]int{1, 2, 3, 4}
 
-	var strings = [3]string{"nama1", "nama2", "nama3"}
+	var strArr = [3]string{"nama1", "nama2", "nama3"}
 
 	fmt.Println()
 	fmt.Printf("%#v\n", numbers)
-	fmt.Printf("%#v\n", strings)
+	fmt.Printf("%#v\n", strArr)
 
 	//Modifying Array element via index
 	var fruits = [3]string{"apel", "pisang", "mangga"}
@@ -167,13 +178,13 @@ func main() {
 	fmt.Printf("%#v\n", fruits)
 
 	//Array looping elements
-	var fruits1 = [3]string{"apple, banana", "mango"}
+	var fruits1 = [3]string{"apple", "banana", "mango"}
 
 	for i, v := range fruits1 { // range lets you iterate through the "current" dimension
 		fmt.Printf("Index : %d, Value: %s\n", i, v)
 	}
 
-	for i := 0; i < len(fruits); i++ {
+	for i := 0; i < len(fruits1); i++ {
 		fmt.Printf("Index : %d, Value: %s\n", i, fruits1[i])
 	}
 
@@ -284,7 +295,7 @@ func main() {
 
 	var fruits15 = fruits13[1:]
 
-	fmt.Println("Fruits14 len:", len(fruits15))
+	fmt.Println("Fruits14 cap:", len(fruits15))
 	fmt.Println("Fruits14 len:", len(fruits15))
 
 	//Slice: creating a new backing array
@@ -347,7 +358,7 @@ func main() {
 	switch {
 	case score3 == 8:
 		fmt.Println("Perfect")
-	case (score3 < 3) && (score > 3):
+	case (score3 < 3) && (score3 > 3):
 		fmt.Println("not bad")
 		fallthrough
 	case score3 < 5:
@@ -681,7 +692,7 @@ outerLoop:
 	fmt.Println()
 
 	// calling exported functions from herlpers directory
-	helpers.Greet_helpers() // imports/exports functions only work with first letter capital
+	helpers.GreetHelpers() // imports/exports functions only work with first letter capital
 
 	fmt.Println()
 
@@ -692,10 +703,361 @@ outerLoop:
 	fmt.Printf("Type of c1: %T\n", c1)
 	fmt.Printf("Type of r1: %T\n", r1)
 
+	fmt.Println()
+
+	fmt.Println("Circle area", c1.area())
+	fmt.Println("Circle Perimeter", c1.perimeter())
+
+	fmt.Println("Rectangle area", r1.area())
+	fmt.Println("Rectangle perimeter", r1.perimeter())
+
+	fmt.Println()
+
+	// declaring interface with type assertion
+	var c2 shape = circle{radius: 5}
+
+	value, ok := c2.(circle)
+
+	if ok == true {
+		fmt.Printf("Circle value: %T\n", value)
+		fmt.Printf("Circle volume: %v\n", value.volume())
+	}
+
+	// Empty Interface
+	var randomValues interface{}
+
+	_ = randomValues
+
+	randomValues = "Jalan Sudirman"
+
+	randomValues = 20
+
+	randomValues = true
+
+	randomValues = []string{"Airell", "Nanda"}
+
+	fmt.Printf("randomValues : %T\n", randomValues)
+	fmt.Printf("randomValues : %t\n", randomValues)
+	fmt.Printf("randomValues : %d\n", randomValues)
+	fmt.Printf("randomValues : %s\n", randomValues)
+	fmt.Printf("randomValues : %v\n", randomValues)
+
+	fmt.Println()
+
+	// Empty Interface with Type Assertion
+	var v interface{}
+
+	v = 20
+
+	if value, ok := v.(int); ok == true {
+		v = value * 9
+	}
+
+	fmt.Printf("v : %d\n", v)
+
+	fmt.Println()
+
+	//Empty Interface with map & slice
+	rs := []interface{}{1, "Airell", true, 2, "Ananda", true}
+
+	rm := map[string]interface{}{
+		"Name":   "Airell",
+		"Status": true,
+		"Age":    23,
+	}
+
+	_, _ = rs, rm
+
+	fmt.Printf("rs : %v\n", rs)
+	fmt.Printf("rm : %v\n", rm)
+
+	fmt.Println()
+
+	//Concurrency
+	numbersConcur := []int{5, 7, 3, 10}
+
+	var wg sync.WaitGroup
+	wg.Add(len(numbersConcur))
+
+	for _, num := range numbers {
+		go factorial(num, &wg)
+	}
+
+	wg.Wait()
+	fmt.Println("All factorials calculated")
+
+	fmt.Println()
+
+	//Goroutines
+	fmt.Println("main execution started")
+
+	go firstProcess(8)
+
+	secondProcess(8)
+
+	fmt.Println("No. of Goroutines:", runtime.NumGoroutine())
+
+	fmt.Println("main execution ended")
+
+	fmt.Println()
+
+	//Gorountine Asynchronus process
+	fmt.Println("main execution started")
+
+	go firstProcess1(8)
+
+	secondProcess1(8)
+
+	fmt.Println("No. of Goroutines:", runtime.NumGoroutine())
+
+	time.Sleep(time.Second * 2)
+
+	fmt.Println("main execution ended")
+
+	fmt.Println()
+
+	//Runtime differenes between synchronus and asynchronus
+	now := time.Now()
+
+	for i := 0; i < 10; i++ {
+		time.Sleep(1 * time.Second)
+		fmt.Println("HelloWorld")
+	}
+
+	diff := time.Since(now)
+	fmt.Println(diff)
+
+	fmt.Println()
+
+	wg1 := &sync.WaitGroup{}
+	now1 := time.Now()
+
+	for i := 0; i < 10; i++ {
+		wg1.Add(1)
+		go func() {
+			time.Sleep(1 * time.Second)
+			fmt.Println("HelloWorld")
+			wg.Done()
+		}()
+	}
+
+	wg1.Wait()
+	diff1 := time.Since(now1)
+	fmt.Println(diff1)
+
+	fmt.Println()
+
+	//Concurrency example: Asynchronus Email Sending
+	notifications := []Notification{
+		{UserID: 101, Message: "Your Order has been confirmed"},
+		{UserID: 202, Message: "Your account has been created"},
+		{UserID: 303, Message: "Your payment was successful"},
+	}
+
+	for _, notification := range notifications {
+		go sendEmailAsync(notification.UserID, notification.Message)
+	}
+
+	fmt.Println("Main application continues...")
+
+	time.Sleep(3 * time.Second)
+
+	fmt.Println("Main application finished")
+
+	fmt.Println()
+
+	//Scenario Image Processing Services
+	images := []string{
+		"https://example.com/image1.png",
+		"https://example.com/image2.png",
+		"https://example.com/image3.png",
+		"https://example.com/image4.png",
+	}
+
+	for _, imageURL := range images {
+		go processImage(imageURL)
+	}
+
+	fmt.Println("Image processing started, main application continues...")
+
+	time.Sleep(5 * time.Second)
+
+	fmt.Println("All image processing completed")
+
+	//Scenario: Task Scheduler
+	task1 := func() {
+		fmt.Println("Task 1 is being executed")
+	}
+
+	task2 := func() {
+		fmt.Println("Task 2 is being executed")
+	}
+	task3 := func() {
+		fmt.Println("Task 3 is being executed")
+	}
+
+	scheduleTask(task1)
+	scheduleTask(task2)
+	scheduleTask(task3)
+
+	fmt.Println("Main application continues...")
+
+	var wg2 sync.WaitGroup
+	wg2.Add(3)
+	go func() {
+		wg2.Wait()
+		fmt.Println("All tasks completed")
+	}()
+
+	wg2.Done()
+	wg2.Done()
+	wg2.Done()
+
+	//Scenario: Download Manager
+	downloadJobs := map[string]string{
+		"https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4": "video1.mp4",
+		"https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_2mb.mp4": "video2.mp4",
+		"https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_5mb.mp4": "video3.mp4",
+	}
+
+	var wg3 sync.WaitGroup
+	wg3.Add(len(downloadJobs))
+
+	for url, destination := range downloadJobs {
+		go func(u, d string) {
+			defer wg3.Done()
+			downloadFile(u, d)
+		}(url, destination)
+	}
+
+	wg3.Wait()
+
+	fmt.Println("All files downloaded")
+
 	//Maps: key-value stores implemented hash tables
 	//Map is Go's built-in associative data type to stores key-value pairs with fast average-time lookups
 	//Maps let you use more meaningful keys such as names, IDs, or other comparable values
 }
+
+/*
+=================================================================================
+CONCURRENCY
+=================================================================================
+
+The ability to manage multiple tasks independently without a fixed order.
+Tasks don't have to run at the exact same time — they just progress without
+waiting on each other.
+
+Concurrency    → organizing tasks to progress independently (dealing with many)
+Asynchronism   → completing tasks without blocking, efficient for I/O-bound ops
+Parallelism    → tasks literally run at the same time across multiple CPU cores
+
+In Go, concurrency is built around two things:
+  - Goroutines : lightweight threads launched with the `go` keyword
+  - Channels   : pipeline for Goroutines to communicate and sync safely
+
+=================================================================================
+CONCURRENCY vs ASYNCHRONISM vs PARALLELISM
+=================================================================================
+
+CONCURRENCY
+  - Focuses on organizing and managing tasks so they can progress independently.
+  - Concurrent tasks CAN run at the same time, but not always.
+  - Achieved using techniques like multithreading or Goroutines in Go.
+  - Helps improve resource utilization and overall performance.
+
+ASYNCHRONISM
+  - Refers to a method or pattern for completing tasks without blocking.
+  - Allows tasks to operate without waiting for one another to finish.
+  - Often event-driven and highly efficient for I/O-bound operations (input/output).
+  - In I/O scenarios, asynchronism is usually combined with concurrency
+    to further improve resource performance.
+
+PARALLELISM
+  - Allows multiple tasks to run *truly simultaneously* across multiple
+    processors or CPU cores.
+  - Tasks run at the exact same time, not just independently progressing.
+  - Works best for CPU-bound tasks that can be split into independent sub-tasks.
+  - Combining multiple processing units via parallelism reduces overall
+    execution time.
+
+CONCURRENCY  → about *dealing with* lots of things at once
+               (tasks take turns, managed independently, order is unknown)
+PARALLELISM  → about *doing* lots of things at once
+               (tasks literally run at the same time on separate cores)
+
+=================================================================================
+HOW CONCURRENCY WORKS
+=================================================================================
+
+A concurrent program breaks a large task into smaller sub-tasks.
+These sub-tasks can be executed concurrently by multiple threads or Goroutines.
+This allows better use of multicore processors and faster execution
+for tasks that are computationally intensive.
+
+GOROUTINES
+  - Lightweight threads managed by the Go runtime (not the OS).
+  - Launched with the `go` keyword before a function call.
+  - Thousands of Goroutines can run concurrently with minimal overhead.
+  - Provides a strong concurrency model for writing concurrent programs quickly.
+
+CHANNELS
+  - Used for communication and synchronization between Goroutines.
+  - Goroutines can send and receive data through channels safely.
+  - Prevents race conditions by controlling how data is shared.
+
+=================================================================================
+CONCURRENCY CONSEQUENCES
+=================================================================================
+
+Concurrent programs introduce risks that need to be understood and handled.
+
+Race Condition
+  Two or more goroutines access the same variable simultaneously without proper
+  synchronization — one writes while another reads, producing unpredictable,
+  inconsistent results. Hard to reproduce and dangerous in production.
+
+Deadlock
+  Goroutines wait on each other indefinitely for a resource neither will release.
+  Classic cause: goroutine A holds mutex 1 waiting for mutex 2, while goroutine B
+  holds mutex 2 waiting for mutex 1. Go runtime auto-detects this and halts
+  the program with a clear error.
+
+Starvation
+  A goroutine never gets access to the resource it needs because higher-priority
+  goroutines keep taking it first. Critical tasks get delayed, response time spikes,
+  and the app feels slow or unresponsive.
+
+Livelock
+  Similar to deadlock, but goroutines keep actively changing state in response to
+  each other — never actually stopping, yet never making real progress.
+  CPU gets consumed with no productive output.
+
+Resource Contention
+  Many goroutines compete for the same resource simultaneously, creating a
+  performance bottleneck. Example: a full channel with no reader blocks the
+  sending goroutine, reducing overall app throughput.
+
+=================================================================================
+SOLUTIONS
+=================================================================================
+
+Mutex Protection      → use sync.Mutex to ensure only one goroutine accesses
+                        a shared resource at a time
+
+Channel Communication → use channels for inter-goroutine communication instead
+                        of sharing memory directly — safer and more idiomatic Go
+
+WaitGroup Sync        → use sync.WaitGroup to synchronize goroutine lifecycles,
+                        ensuring main() waits for all goroutines to finish
+
+Consistent Locking    → always acquire mutexes in the same order across all
+                        goroutines to prevent deadlock by design
+
+Testing               → run `go run -race` to detect race conditions during development
+
+=================================================================================
+*/
 
 // declaring functions without return
 func greet(name, address string) {
@@ -741,7 +1103,7 @@ func print(names ...string) []map[string]string {
 	return result
 }
 
-// declaring variadic function by unpacking a slice with ellipsis (...)
+// calling variadic function by unpacking a slice with ellipsis (...)
 func sum(numbers ...int) int {
 	total := 0
 
@@ -797,4 +1159,93 @@ func (c circle) perimeter() float64 {
 
 func (r rectangle) perimeter() float64 {
 	return 2 * (r.height + r.width)
+}
+
+// declaring method to circle
+func (c circle) volume() float64 {
+	return (4.0 / 3.0) * math.Pi * math.Pow(c.radius, 3)
+}
+
+func factorial(n int, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	result := 1
+	for i := 2; i <= n; i++ {
+		result *= i
+	}
+
+	fmt.Printf("Factorial of %d is %d\n", n, result)
+}
+
+func firstProcess(index int) {
+	fmt.Println("First process func started")
+	for i := 1; i <= index; i++ {
+		fmt.Println("i=", i)
+	}
+	fmt.Println("First process func ended")
+}
+
+func secondProcess(index int) {
+	fmt.Println("Second process func started")
+	for j := 1; j <= index; j++ {
+		fmt.Println("j=", j)
+	}
+	fmt.Println("Second process func ended")
+}
+
+func firstProcess1(index int) {
+	fmt.Println("First Process func starter")
+	for i := 1; i <= index; i++ {
+		fmt.Println("i=", i)
+	}
+	fmt.Println("First process func ended")
+}
+
+func secondProcess1(index int) {
+	fmt.Println("Second process func started")
+	for j := 1; j <= index; j++ {
+		fmt.Println("j=", j)
+	}
+	fmt.Println("Second process func ended")
+}
+
+func sendEmailAsync(userID int, message string) {
+	// Stimulate sending an email (in real-life scenario)
+	time.Sleep(2 * time.Second)
+	fmt.Printf("Email notification sent to user %d: %s\n", userID, message)
+}
+
+func processImage(imageURL string) {
+	fmt.Printf("Processing image: %s\n", imageURL)
+	// Simulate image processing (replace this with actual image processing code)
+	time.Sleep(3 * time.Second)
+	fmt.Printf("Image processing completed: %s\n:", imageURL)
+}
+
+func scheduleTask(task func()) {
+	go task()
+}
+
+func downloadFile(url string, destination string) {
+	response, err := http.Get(url)
+	if err != nil {
+		fmt.Printf("Error downloading file from %s: %s\n", url, err)
+		return
+	}
+	defer response.Body.Close()
+
+	file, err := os.Create(destination)
+	if err != nil {
+		fmt.Printf("Error creating file: %s: %s\n", destination, err)
+		return
+	}
+	defer file.Close()
+
+	_, err = io.Copy(file, response.Body)
+	if err != nil {
+		fmt.Printf("Error writing to file %s: %s\n", destination, err)
+		return
+	}
+
+	fmt.Printf("Downloaded file from %s to %s\n", url, destination)
 }

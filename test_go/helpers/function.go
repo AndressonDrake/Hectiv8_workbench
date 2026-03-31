@@ -2,10 +2,10 @@ package helpers
 
 import "fmt"
 
-func Greet_helpers() {
+func GreetHelpers() {
 	fmt.Println("Hello dari function Greet")
 }
 
-func greet_helpers() {
+func greetHelpers() {
 	fmt.Println("Hello dari function greet")
 }
