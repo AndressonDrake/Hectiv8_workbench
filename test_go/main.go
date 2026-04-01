@@ -1,14 +1,18 @@
 package main
 
 import (
+	"bufio"
+	"context"
 	"fmt"
 	"io"
 	"math"
 	"net/http"
 	"os"
+	"os/signal"
 	"runtime"
 	"strings"
 	"sync"
+	"syscall"
 	"testing_go/helpers"
 	"time"
 )
@@ -992,6 +996,188 @@ outerLoop:
 
 	fmt.Println()
 
+	//Channels: unbuffered channel
+	c5 := make(chan int)
+
+	go func(c chan int) {
+		fmt.Println("func goroutine starts sending data into the channel")
+		c5 <- 10
+		fmt.Println("func goroutine after sending data into the channel")
+	}(c5)
+
+	fmt.Println("main goroutine sleeps for 2 seconds")
+	time.Sleep(time.Second * 2)
+
+	fmt.Println("main goroutine starts receiving data")
+	d := <-c5
+	fmt.Println("main goroutine recieved data", d)
+
+	close(c5)
+	time.Sleep(time.Second)
+
+	fmt.Println()
+
+	//Channels: buffered channel
+	c6 := make(chan int, 3)
+
+	go func(c chan int) {
+		for i := 1; i <= 5; i++ {
+			fmt.Printf("func goroutine #%d starts sending data into the channel\n", i)
+			c6 <- i
+			fmt.Printf("func goroutine #%d after sending data into the channel\n", i)
+		}
+
+		close(c)
+	}(c6)
+
+	fmt.Println("main goroutine sleeps 2 seconds")
+	time.Sleep(time.Second * 2)
+
+	for v := range c6 {
+		fmt.Println("main goroutine received value from channel:", v)
+	}
+
+	fmt.Println()
+
+	//Channle: Select
+	c7 := make(chan string)
+	c8 := make(chan string)
+
+	go func() {
+		time.Sleep(2 * time.Second)
+
+		c7 <- "Hello!"
+	}()
+
+	go func() {
+		time.Sleep(1 * time.Second)
+		c8 <- "Salut!"
+	}()
+
+	for i := 1; i <= 2; i++ {
+		select {
+		case msg1 := <-c7:
+			fmt.Println("Received", msg1)
+		case msg2 := <-c8:
+			fmt.Println("Received", msg2)
+		}
+	}
+
+	fmt.Println()
+
+	//Scenario: Sum of Squares concurrent calculation
+	numbersChannel := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+
+	resultCh := make(chan int)
+
+	mid := len(numbersChannel) / 2
+	firsthalf := numbersChannel[:mid]
+	secondHalf := numbersChannel[mid:]
+
+	var wgCh sync.WaitGroup
+	wgCh.Add(2)
+	resultCh1 := 0
+
+	go calculateSumOfSquares(firsthalf, resultCh, &wgCh)
+	go calculateSumOfSquares(secondHalf, resultCh, &wgCh)
+
+	go func() {
+		wgCh.Wait()
+		close(resultCh)
+	}()
+
+	for sum := range resultCh {
+		resultCh1 += sum
+	}
+
+	fmt.Printf("Sum of squares : %d\n", resultCh1)
+
+	//Scenario: Concurrent Word Count
+	filenames := []string{
+		"file1.txt",
+		"file2.txt",
+		"file3.txt",
+	}
+
+	var wg4 sync.WaitGroup
+	wg4.Add(len(filenames))
+
+	wordCounts := make(map[string]int)
+
+	for _, filename := range filenames {
+		go func(fn string) {
+			defer wg4.Done()
+			ch := make(chan int)
+			go countWords(fn, ch)
+			wordCounts[fn] = <-ch
+		}(filename)
+	}
+
+	wg4.Wait()
+
+	for filename, count := range wordCounts {
+		fmt.Printf("%s: %d words\n", filename, count)
+	}
+
+	fmt.Println()
+
+	//Defer
+	defer fmt.Println("defer function starts to execute")
+	fmt.Println("Hai everyone")
+	fmt.Println("Welcome back to Go learning center")
+
+	fmt.Println()
+
+	//Defer using functions
+	callDeferFunc()
+	fmt.Println("Hai everyone !!")
+
+	fmt.Println()
+
+	//Scenario: Graceful Shutdown with Defer
+	server := &http.Server{Addr: ":8080"}
+
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "Hello, World!")
+	})
+
+	go func() {
+		if err := server.ListenAndServe(); err != nil {
+			fmt.Println("Server error", err)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
+	<-quit
+
+	fmt.Println("Shutting down the server...")
+	if err := server.Shutdown(context.Background()); err != nil {
+		fmt.Println("Error while shutting down the server:", err)
+	}
+	fmt.Println("Server gracefully stopped.")
+
+	fmt.Println()
+
+	//Scenario: Deferred File Closing
+	filename := "data.txt"
+	lines, err := processFile(filename)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	fmt.Printf("NUmber of lines in %s: %d\n", filename, lines)
+
+	fmt.Println()
+
+	//Exit
+	defer fmt.Println("Invoke with defer")
+	fmt.Println("Before Exiting")
+	os.Exit(1)
+
+	fmt.Println()
+
 	//Maps: key-value stores implemented hash tables
 	//Map is Go's built-in associative data type to stores key-value pairs with fast average-time lookups
 	//Maps let you use more meaningful keys such as names, IDs, or other comparable values
@@ -1330,4 +1516,53 @@ func printChannel1(c3 <-chan string) {
 func introduce1(student string, c chan<- string) {
 	result := fmt.Sprintf("Hai, my name is %s", student)
 	c <- result
+}
+
+func calculateSumOfSquares(numbers []int, ch chan<- int, wg *sync.WaitGroup) {
+	defer wg.Done()
+	sum := 0
+	for _, num := range numbers {
+		sum += num * num
+	}
+	ch <- sum
+}
+
+func countWords(filename string, ch chan<- int) {
+	content, err := os.ReadFile(filename)
+	if err != nil {
+		fmt.Printf("Error reading file %s: %s\n", filename, err)
+		ch <- 0
+		return
+	}
+
+	words := strings.Fields(string(content))
+	ch <- len(words)
+}
+
+func callDeferFunc() {
+	defer deferFunc()
+}
+
+func deferFunc() {
+	fmt.Println("Defer func starts to execute")
+}
+
+func processFile(filename string) (int, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return 0, err
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	lines := 0
+	for scanner.Scan() {
+		lines++
+	}
+
+	if err := scanner.Err(); err != nil {
+		return 0, err
+	}
+
+	return lines, nil
 }
