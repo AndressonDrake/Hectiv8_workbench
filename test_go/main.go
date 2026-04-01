@@ -837,7 +837,7 @@ outerLoop:
 		go func() {
 			time.Sleep(1 * time.Second)
 			fmt.Println("HelloWorld")
-			wg.Done()
+			wg1.Done()
 		}()
 	}
 
@@ -885,10 +885,11 @@ outerLoop:
 	fmt.Println("All image processing completed")
 
 	//Scenario: Task Scheduler
+	var wg2 sync.WaitGroup
+
 	task1 := func() {
 		fmt.Println("Task 1 is being executed")
 	}
-
 	task2 := func() {
 		fmt.Println("Task 2 is being executed")
 	}
@@ -896,14 +897,13 @@ outerLoop:
 		fmt.Println("Task 3 is being executed")
 	}
 
+	wg2.Add(3)
 	scheduleTask(task1)
 	scheduleTask(task2)
 	scheduleTask(task3)
 
 	fmt.Println("Main application continues...")
 
-	var wg2 sync.WaitGroup
-	wg2.Add(3)
 	go func() {
 		wg2.Wait()
 		fmt.Println("All tasks completed")
@@ -915,9 +915,9 @@ outerLoop:
 
 	//Scenario: Download Manager
 	downloadJobs := map[string]string{
-		"https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4": "video1.mp4",
-		"https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_2mb.mp4": "video2.mp4",
-		"https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_5mb.mp4": "video3.mp4",
+		"https://www.youtube.com/watch?v=a3ICNMQW7Ok&pp=ygUNZXhhbXBsZSB2aWRlbw%3D%3D": "video1.mp4",
+		"https://www.youtube.com/watch?v=K4TOrB7at0Y&pp=ygUNZXhhbXBsZSB2aWRlbw%3D%3D": "video2.mp4",
+		"https://www.youtube.com/watch?v=aGTg9xsI8oY&pp=ygUNZXhhbXBsZSB2aWRlbw%3D%3D": "video3.mp4",
 	}
 
 	var wg3 sync.WaitGroup
@@ -933,6 +933,64 @@ outerLoop:
 	wg3.Wait()
 
 	fmt.Println("All files downloaded")
+
+	//Channels: Implementing channels
+	c := make(chan string)
+
+	go introduce("Airell", c)
+
+	go introduce("Nanda", c)
+
+	go introduce("Mailo", c)
+
+	msg1 := <-c
+	fmt.Println(msg1)
+
+	msg2 := <-c
+	fmt.Println(msg2)
+
+	msg3 := <-c
+	fmt.Println(msg3)
+
+	close(c)
+
+	//Channels with anonymous function
+	c3 := make(chan string)
+
+	students := []string{"Airell", "Kailo", "Indah"}
+
+	for _, v := range students {
+		go func(student string) {
+			fmt.Println("Student", student)
+			result := fmt.Sprintf("Hai, my name is %s", student)
+			c3 <- result
+		}(v)
+	}
+
+	for i := 1; i <= 3; i++ {
+		printChannel(c3)
+	}
+
+	close(c3)
+
+	fmt.Println()
+
+	//Channels with directions
+	c4 := make(chan string)
+
+	studentsChannel := []string{"Airell", "Kaito", "indah"}
+
+	for _, v := range studentsChannel {
+		go introduce1(v, c4)
+	}
+
+	for i := 1; i <= 3; i++ {
+		printChannel1(c4)
+	}
+
+	close(c4)
+
+	fmt.Println()
 
 	//Maps: key-value stores implemented hash tables
 	//Map is Go's built-in associative data type to stores key-value pairs with fast average-time lookups
@@ -1209,23 +1267,26 @@ func secondProcess1(index int) {
 	fmt.Println("Second process func ended")
 }
 
+// declaring goroutine for email nontification
 func sendEmailAsync(userID int, message string) {
 	// Stimulate sending an email (in real-life scenario)
 	time.Sleep(2 * time.Second)
 	fmt.Printf("Email notification sent to user %d: %s\n", userID, message)
 }
 
+// declaring gorutine for image processing
 func processImage(imageURL string) {
 	fmt.Printf("Processing image: %s\n", imageURL)
 	// Simulate image processing (replace this with actual image processing code)
 	time.Sleep(3 * time.Second)
-	fmt.Printf("Image processing completed: %s\n:", imageURL)
+	fmt.Printf("Image processing completed: %s\n", imageURL)
 }
 
 func scheduleTask(task func()) {
 	go task()
 }
 
+// declaring function for goroutine file download
 func downloadFile(url string, destination string) {
 	response, err := http.Get(url)
 	if err != nil {
@@ -1248,4 +1309,25 @@ func downloadFile(url string, destination string) {
 	}
 
 	fmt.Printf("Downloaded file from %s to %s\n", url, destination)
+}
+
+// declaring channels
+func introduce(student string, c chan string) {
+	result := fmt.Sprintf("Hai, my name is %s", student)
+
+	c <- result
+}
+
+// declaring channels for anonymous function
+func printChannel(c chan string) {
+	fmt.Println(<-c)
+}
+
+func printChannel1(c3 <-chan string) {
+	fmt.Println(<-c3)
+}
+
+func introduce1(student string, c chan<- string) {
+	result := fmt.Sprintf("Hai, my name is %s", student)
+	c <- result
 }
