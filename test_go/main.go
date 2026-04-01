@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -10,6 +11,7 @@ import (
 	"os"
 	"os/signal"
 	"runtime"
+	"strconv"
 	"strings"
 	"sync"
 	"syscall"
@@ -1171,6 +1173,60 @@ outerLoop:
 
 	fmt.Println()
 
+	//Scenario: Defer for Cleanup Tasks
+	performTask("Task 1")
+	performTask("Task 2")
+	performTask("Task 3")
+
+	//Error data type
+	var number int
+	var err1 error
+
+	number, err1 = strconv.Atoi("123GH")
+
+	if err1 == nil {
+		fmt.Println(number)
+	} else {
+		fmt.Println(err1.Error())
+	}
+
+	number, err1 = strconv.Atoi("123")
+
+	if err1 == nil {
+		fmt.Println(number)
+	} else {
+		fmt.Println(err1.Error())
+	}
+
+	//Declaring custom error and panic
+	defer catchErr()
+
+	var password string
+
+	fmt.Scanln(&password)
+
+	if valid, err := validPassword(password); err != nil {
+		panic(err)
+	} else {
+		fmt.Println(valid)
+	}
+
+	//Recover function
+	var password1 string
+
+	fmt.Scanln(&password1)
+
+	if valid, err := validPassword1(password1); err != nil {
+		panic(err.Error())
+	} else {
+		fmt.Println(valid)
+	}
+
+	//Scenario: Graceful Exit with Panic Recovery
+	fmt.Println("5 / 2 =", divide(5, 2))
+	fmt.Println("10 / 0 =", divide(10, 0))
+	fmt.Println("8 / 2 =", divide(8, 2))
+
 	//Exit
 	defer fmt.Println("Invoke with defer")
 	fmt.Println("Before Exiting")
@@ -1565,4 +1621,49 @@ func processFile(filename string) (int, error) {
 	}
 
 	return lines, nil
+}
+
+func performTask(taskName string) {
+	fmt.Printf("Task %s started. \n", taskName)
+	defer fmt.Printf("Task: %s completed. \n", taskName)
+}
+
+func validPassword(password string) (string, error) {
+	pl := len(password)
+
+	if pl < 5 {
+		return "", errors.New("password has to have more than 4 characters")
+	}
+	return "Valid password", nil
+}
+
+func catchErr() {
+	if r := recover(); r != nil {
+		fmt.Println("Error occured:", r)
+	} else {
+		fmt.Println("Application running perfectly")
+	}
+}
+
+func validPassword1(password string) (string, error) {
+	pl := len(password)
+
+	if pl < 5 {
+		return "", errors.New("Password has to have more than 4 characters")
+	}
+	return "valid password", nil
+}
+
+func divide(a, b int) (result int, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("Division by zero occured.")
+		}
+	}()
+
+	if b == 0 {
+		panic("Division by zero")
+	}
+
+	return a / b, nil
 }
